@@ -3,7 +3,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>跨境竞品对标 AI 工作台</title>
+  <title>跨境电商AI工作台</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%231457d9'/%3E%3Cpath d='M10 22 22 10M14 10h8v8' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E" />
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
   <style>
@@ -908,6 +909,7 @@
 
     .view { display: none; }
     .view.active { display: block; }
+    .layout.view.active { display: grid; }
 
     .history-list {
       display: grid;
@@ -960,7 +962,7 @@
     <header class="topbar">
       <div class="brand">
         <div class="mark" aria-hidden="true">↗</div>
-        <span>跨境竞品对标 AI 工作台</span>
+        <span>跨境电商AI工作台</span>
       </div>
       <nav class="nav" aria-label="主导航">
         <button class="active" data-view-button="workbench">工作台</button>
@@ -1875,6 +1877,29 @@ ${JSON.stringify(schema, null, 2)}`;
       lines.push("|---|---|---|---|");
       report.improvement_opportunities.forEach(x => lines.push(`| ${x.opportunity || ""} | ${x.current_gap || ""} | ${x.target_30_60_90 || ""} | ${x.kpi || ""} |`));
       lines.push("");
+      lines.push("## 市场全景");
+      lines.push("| 指标 | 数值 | 变化 |");
+      lines.push("|---|---:|---:|");
+      report.market_overview.forEach(x => lines.push(`| ${x.label || ""} | ${x.value || ""} | ${x.change || ""} |`));
+      lines.push("");
+      lines.push("## 国家/渠道对比");
+      lines.push("| 市场/渠道 | 指数 | 变化 |");
+      lines.push("|---|---:|---:|");
+      report.country_channel_comparison.forEach(x => lines.push(`| ${x.country || ""} | ${x.value ?? ""} | ${x.change || ""} |`));
+      lines.push("");
+      lines.push("## 关键词热度");
+      lines.push("| 关键词 | 热度 |");
+      lines.push("|---|---:|");
+      report.keyword_heatmap.forEach(x => lines.push(`| ${x.keyword || ""} | ${x.heat ?? ""} |`));
+      lines.push("");
+      lines.push("## ASIN/SKU 机会表");
+      lines.push("| ASIN/SKU | 产品 | 品牌 | 价格 | 评分 | 评论数 | 月销量 | 机会分 | AI 补全 |");
+      lines.push("|---|---|---|---:|---:|---:|---:|---:|---|");
+      report.product_table.forEach(x => lines.push(`| ${x.asin || x.sku || x.item || ""} | ${x.title || ""} | ${x.brand || ""} | ${x.price || ""} | ${x.rating || ""} | ${x.reviews || ""} | ${x.monthly_sales || ""} | ${x.opportunity_score ?? ""} | ${x.ai_fill || ""} |`));
+      lines.push("");
+      lines.push("## AI 搜索曝光");
+      report.ai_search_visibility.forEach(x => lines.push(`- ${x.engine || ""}：${x.visibility || ""}。${x.note || ""}`));
+      lines.push("");
       lines.push("## 30/60/90 天行动计划");
       lines.push("### 30 天");
       report.action_plan.days_30.forEach(x => lines.push(`- ${x}`));
@@ -1989,6 +2014,9 @@ ${JSON.stringify(schema, null, 2)}`;
       $("targetMarket").value = "美国";
       $("category").value = "便携小家电 / 便携风扇";
       $("competitorType").value = "品牌";
+      $("primaryPlatform").value = "Amazon";
+      $("priceBand").value = "$19.99-$89.99";
+      $("batchItems").value = "JISULIFE portable fan\nportable fan rechargeable\ncamping fan with light\nB0CPJ8K1X\nB07Q1X57NQ";
       $("companyInfo").value = "我们是一家做便携小家电的跨境公司，主要销售便携风扇和桌面小电器，目前以 Amazon 和 TikTok Shop 为主，痛点是品牌内容弱、Listing 转化率不稳定、达人内容储备少。";
       $("sourceNotes").value = "希望重点学习竞品的产品组合、内容素材、品牌信任和平台运营方式。";
       currentReport = normalizeReport({
@@ -2032,6 +2060,70 @@ ${JSON.stringify(schema, null, 2)}`;
           { opportunity: "重构 Top SKU 页面内容", current_gap: "Listing 与独立站卖点表达不统一", target_30_60_90: "30 天完成 Top 3 SKU 页面重写，60 天完成素材测试，90 天形成模板", kpi: "转化率 +10%" },
           { opportunity: "建立短视频素材库", current_gap: "达人/UGC 内容储备少", target_30_60_90: "30 天产出 12 条短视频，60 天扩展到 30 条，90 天沉淀 5 类高转化脚本", kpi: "CTR +15%，加购率 +8%" },
           { opportunity: "建立价格梯度", current_gap: "缺少 entry/core/pro 价格层级", target_30_60_90: "90 天形成 3 档价格带与 2 个套装方案", kpi: "AOV +8%" }
+        ],
+        market_overview: [
+          { label: "市场规模", value: "$1.82B", change: "+18.6%" },
+          { label: "月销量", value: "2.48M", change: "+16.3%" },
+          { label: "平均价格", value: "$37.49", change: "-2.7%", direction: "down" },
+          { label: "活跃卖家", value: "18,642", change: "+6.5%" },
+          { label: "新品数", value: "1,286", change: "+12.4%" }
+        ],
+        country_channel_comparison: [
+          { country: "美国", value: 92, change: "+18%" },
+          { country: "英国", value: 61, change: "+8%" },
+          { country: "德国", value: 48, change: "+11%" },
+          { country: "日本", value: 35, change: "+5%" },
+          { country: "加拿大", value: 24, change: "-3%" }
+        ],
+        trend_radar: {
+          lines: [
+            { name: "便携风扇", color: "#2563eb", points: [32, 44, 51, 59, 65, 71, 82] },
+            { name: "露营风扇", color: "#0f8b7f", points: [18, 28, 37, 52, 60, 67, 78] },
+            { name: "静音桌面风扇", color: "#7c3aed", points: [24, 29, 36, 41, 44, 48, 55] }
+          ],
+          warnings: ["退货率上升", "负面评价增多", "专利风险", "价格战激烈"]
+        },
+        keyword_heatmap: [
+          { keyword: "portable fan", heat: 92 },
+          { keyword: "rechargeable fan", heat: 88 },
+          { keyword: "camping fan", heat: 81 },
+          { keyword: "quiet fan", heat: 74 },
+          { keyword: "desk fan", heat: 69 },
+          { keyword: "mini fan", heat: 64 }
+        ],
+        opportunity_scores: [
+          { item: "旅行便携风扇", reason: "需求增长快 / 竞品价格带集中", score: 92 },
+          { item: "车载风扇", reason: "评论痛点多 / 新品可差异化", score: 87 },
+          { item: "露营灯风扇", reason: "趋势上升 / 内容演示强", score: 81 }
+        ],
+        competitor_positioning: [
+          { name: "JISULIFE", x: 72, y: 76, size: 25, color: "#2563eb" },
+          { name: "AMACOOL", x: 54, y: 58, size: 19, color: "#0f8b7f" },
+          { name: "Gaiatop", x: 43, y: 51, size: 17, color: "#f59e0b" },
+          { name: "我方", x: 34, y: 36, size: 20, color: "#c93636" }
+        ],
+        traffic_channels: [
+          { channel: "自然搜索", share: 54.6, volume: "13.4M" },
+          { channel: "直接访问", share: 18.7, volume: "4.6M" },
+          { channel: "付费搜索", share: 12.8, volume: "3.1M" },
+          { channel: "社媒/达人", share: 7.9, volume: "1.9M" },
+          { channel: "展示广告", share: 4.1, volume: "1.0M" }
+        ],
+        product_table: [
+          { asin: "B0CPJ8K1X", title: "Portable Fan 3-in-1 Travel Cooling", brand: "JISULIFE", price: "$39.99", rating: "4.6", reviews: "12,845", monthly_sales: "18,742", opportunity_score: 92, ai_fill: "高增长 / 低差评缺口" },
+          { asin: "B08LZPSC72", title: "Camping Fan with LED Light", brand: "AMACOOL", price: "$29.99", rating: "4.5", reviews: "6,212", monthly_sales: "9,153", opportunity_score: 87, ai_fill: "户外场景强 / 素材好做" },
+          { asin: "B07Q1X57NQ", title: "Rechargeable Desk Fan", brand: "Gaiatop", price: "$19.99", rating: "4.3", reviews: "89,112", monthly_sales: "24,181", opportunity_score: 81, ai_fill: "成熟款 / 需静音差异化" },
+          { asin: "B09P3V2K8D", title: "12V Car Fan", brand: "TriPole", price: "$25.99", rating: "4.1", reviews: "31,992", monthly_sales: "12,540", opportunity_score: 78, ai_fill: "车载细分可切入" }
+        ],
+        ai_search_visibility: [
+          { engine: "Google AI Overview", visibility: "中", note: "品牌词可见，类目词仍被综合评测站占据。" },
+          { engine: "Perplexity", visibility: "低", note: "缺少可引用英文评测、FAQ、对比内容。" },
+          { engine: "ChatGPT Search", visibility: "待核实", note: "建议补充结构化评测与独立站证据页。" }
+        ],
+        batch_research: [
+          { item: "portable fan rechargeable", ai_completed_columns: ["关键词热度", "机会分", "价格带"], next_action: "拆分旅行、办公室、户外三组素材" },
+          { item: "camping fan with light", ai_completed_columns: ["趋势", "风险标签", "竞品列表"], next_action: "重点核查专利和安全认证" },
+          { item: "B0CPJ8K1X", ai_completed_columns: ["评分", "评论痛点", "机会分"], next_action: "提取差评主题做卖点反向设计" }
         ],
         action_plan: {
           days_30: ["梳理 Top 3 SKU 的核心场景、卖点、竞品差异点。", "重写标题、五点、主图卖点和独立站产品页首屏。", "产出 12 条短视频脚本，覆盖开箱、痛点、场景、对比。"],
@@ -2108,13 +2200,14 @@ ${JSON.stringify(schema, null, 2)}`;
     }
 
     function clearInputs() {
-      ["competitorName", "competitorUrl", "category", "companyInfo", "sourceNotes"].forEach(id => $(id).value = "");
+      ["competitorName", "competitorUrl", "category", "priceBand", "batchItems", "companyInfo", "sourceNotes"].forEach(id => $(id).value = "");
       $("emptyState").style.display = "grid";
       $("report").style.display = "none";
       currentReport = null;
       currentMarkdown = "";
       ["copyMdBtn", "downloadMdBtn", "downloadPdfBtn"].forEach(id => $(id).disabled = true);
       $("resultMeta").textContent = "生成后可下载 Markdown 或 PDF";
+      renderDashboard(defaultIntelligence);
       toast("已清空输入和结果");
     }
 
@@ -2152,6 +2245,7 @@ ${JSON.stringify(schema, null, 2)}`;
 
     loadSettings();
     bindEvents();
+    renderDashboard(defaultIntelligence);
     renderHistory();
   </script>
 </body>
