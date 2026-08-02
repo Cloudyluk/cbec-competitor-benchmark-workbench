@@ -1,0 +1,4 @@
+interface:
+  display_name: "CBEC Competitor Benchmark"
+  short_description: "Competitor research with quantified improvement plans"
+  default_prompt: "Use $cbec-research-agent-simple to research a cross-border e-commerce competitor, benchmark it against our company, and return a quantified capability scorecard plus a 30/60/90-day improvement plan."

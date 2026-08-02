@@ -1,0 +1,12 @@
+﻿matrix_type,dimension,unit_or_caliber,target,Soundcore_peer_1_Anker,Aiyima_peer_2,fact_ids,note
+store,品牌展示名,Fosi Audio,Soundcore,Aiyima,,品牌层级对比（peer 列为行业参照，本账本未逐一核验）
+store,运营主体,深圳远虑科技(91440300MA5DT7DQ0G),安克创新(300866 上市),深圳/东莞 HiFi DTC 厂商(未核验),F001,peer 为公开常识参照
+store,成立时间,2017-01,2011(安克创立),约 2010s(未核验),F002,
+store,上市状态,未上市私企,深交所 300866 已上市,未上市私企,F001,"未上市→SME 模式"
+store,主营类目,HiFi 功放/DAC/耳放/耳机,消费级音频(耳机/音箱),HiFi 功放/DAC,F003/F009,
+store,价格带,中低端高性价比(几百元),中端(几十-几百美元),低端(几十-几百元),,高性价比切入
+store,核心渠道,独立站+Amazon+AliExpress/eBay+社媒,独立站+Amazon+全平台,独立站+Amazon+AliExpress,F003/F013,footprint
+store,独立站,fosiaudio.com(A 级),soundcore.com(A 级),aiyima.com(疑似),F003,三者独立站均为官方
+store,品类地位,亚马逊放大器第1/复购第1,消费音频头部品牌,功放/DAC 长尾,F005,
+store,覆盖市场,150+ 国家/地区,全球,全球为主,F004,
+store,2025是否活跃,是(多渠道+2026 仍更新),是,是,F013/F006,三者均活跃

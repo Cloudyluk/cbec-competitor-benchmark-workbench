@@ -1,0 +1,9 @@
+﻿channel,platform,account_or_store,verdict,ledger_level,in_matrix,reason,channel_strength,issues
+品牌独立站,independent_site,fosiaudio.com,确认同主体,VERIFIED,YES,A 级证据 1 条: A_site_legal_page,核心,
+亚马逊全球,amazon,品牌官方店,高度可能,STRONG,YES,"独立 B 级证据 2 类: contact, product_ops",主力,
+AliExpress/速卖通,marketplace,多平台店,疑似关联,WEAK,NO,仅 1 类 B 级证据(product_ops)，需补第二类独立证据,在营,
+eBay,marketplace,多平台店,疑似关联,WEAK,NO,仅 1 类 B 级证据(product_ops)，需补第二类独立证据,在营,
+YouTube,social,Fosi Audio 官方频道,疑似关联,WEAK,NO,仅 1 类 B 级证据(contact)，需补第二类独立证据,主力,
+Facebook/Instagram,social,Fosi Audio 官方主页,疑似关联,WEAK,NO,仅 1 类 B 级证据(contact)，需补第二类独立证据,在营,
+官方社区,web,community.fosiaudio.com,确认同主体,VERIFIED,YES,A 级证据 1 条: A_site_legal_page,在营,
+WhatsApp,direct,+86 13716612254,疑似关联,WEAK,NO,仅 1 类 B 级证据(contact)，需补第二类独立证据,试水,

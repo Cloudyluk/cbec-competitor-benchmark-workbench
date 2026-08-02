@@ -1,0 +1,58 @@
+{
+  "summary": {
+    "benchmark_result": "重点学习|选择性学习|持续观察|不建议对标",
+    "one_sentence_reason": "string",
+    "confidence": "high|medium|low",
+    "overall_score": 0
+  },
+  "competitor_identity": {
+    "name": "string",
+    "type": "string",
+    "company_entity": "string",
+    "official_site": "string",
+    "channels": ["string"],
+    "ambiguities": ["string"]
+  },
+  "key_evidence": [
+    {
+      "fact": "string",
+      "confidence": "已核验|较可靠|仅供参考|待核实|有冲突",
+      "source": "string",
+      "date": "string"
+    }
+  ],
+  "strengths": [
+    {
+      "area": "string",
+      "observation": "string",
+      "why_it_matters": "string",
+      "evidence": "string"
+    }
+  ],
+  "scorecard": [
+    {
+      "capability": "Product Portfolio",
+      "competitor_score": 4,
+      "our_score": null,
+      "gap": null,
+      "priority": "high|medium|low",
+      "evidence": "string"
+    }
+  ],
+  "improvement_opportunities": [
+    {
+      "opportunity": "string",
+      "current_gap": "string",
+      "target_30_60_90": "string",
+      "kpi": "string"
+    }
+  ],
+  "action_plan": {
+    "days_30": ["string"],
+    "days_60": ["string"],
+    "days_90": ["string"]
+  },
+  "missing_company_data": ["string"],
+  "risks_and_non_transferable_points": ["string"],
+  "markdown_report": "string"
+}

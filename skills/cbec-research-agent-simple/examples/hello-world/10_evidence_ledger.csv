@@ -1,0 +1,5 @@
+﻿fact_id,category,claim,level,source_type,source_url,accessed_at,source_quote,conflicts_with,data_as_of,metric_type,reported_at,note
+F001,identity,示例品牌由深圳市示例科技有限公司运营（统一社会信用代码 91440300MA1EXAMPLE，演示占位）,VERIFIED,L1_official,https://example.com/gsxt/91440300MA1EXAMPLE,2026-08-02,统一社会信用代码公示,,,structural,,演示占位：实际调研请替换为真实工商核验
+F002,channel,示例品牌在 Amazon 北美开设官方店铺「DemoCo Official」,VERIFIED,L2_platform,https://example.com/amazon/stores/democo,2026-08-02,店铺主体与商标备案一致,,,structural,,演示占位
+F003,financial,示例品牌 2024 年海外营收约 1 亿元人民币,STRONG,L3_authoritative,https://example.com/media/2025-democo-revenue,2026-08-02,媒体盘点报道,,2024-12,slow,2025-07-25,演示占位：单一权威二手来源
+F004,risk,未查询到示例品牌命中制裁或召回清单的记录,WEAK,L4_tool_or_community,https://example.com/screening/none,2026-08-02,第三方筛查工具无命中,,,na,,演示占位：需以官方清单复核

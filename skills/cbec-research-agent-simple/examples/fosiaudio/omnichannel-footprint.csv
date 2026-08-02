@@ -1,0 +1,9 @@
+﻿entity_group,channel,platform,account_or_store,url,attribution_evidence,evidence_fact_ids,channel_strength,role,market,category,first_seen,note
+FosiAudio,品牌独立站,independent_site,fosiaudio.com,https://fosiaudio.com,A_site_legal_page,F003,核心,品牌+销售+私域,全球,audio,2017,About 页自述 Fosi Audio 为深圳远虑科技旗下品牌（A级）
+FosiAudio,亚马逊全球,amazon,品牌官方店,https://www.amazon.com/fosiaudio,B_sku_scheme|B_support_email,F003,主力,销售,全球,audio,2017,官网 About 页列明 Amazon 店铺链接+支持邮箱 support@fosiaudio.com 一致（B级 product_ops+contact 两组）
+FosiAudio,AliExpress/速卖通,marketplace,多平台店,,B_sku_scheme,F007,在营,销售,全球,audio,2018,媒体报道列明渠道（B级 product_ops），升A待查店铺主体
+FosiAudio,eBay,marketplace,多平台店,,B_sku_scheme,F007,在营,销售,全球,audio,2018,媒体报道列明渠道（B级 product_ops）
+FosiAudio,YouTube,social,Fosi Audio 官方频道,https://www.youtube.com/@FosiAudio,B_support_email,F013,主力,种草+引流,全球,audio,2018,官网/博客交叉链接+媒体案例（B级 contact）
+FosiAudio,Facebook/Instagram,social,Fosi Audio 官方主页,,B_support_email,F013,在营,种草,全球,audio,2018,官网列明社交主页（B级 contact）
+FosiAudio,官方社区,web,community.fosiaudio.com,https://community.fosiaudio.com,A_site_legal_page,F003,在营,用户共创,全球,audio,2023,官方域名社区，About 同主体（A级）
+FosiAudio,WhatsApp,direct,+86 13716612254,,B_support_email,F013,试水,售后直达,全球,audio,2024,官网披露客服 WhatsApp（B级 contact）

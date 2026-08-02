@@ -1,0 +1,4 @@
+﻿fact_id,category,claim,level,source_type,source_url,accessed_at,source_quote,conflicts_with,data_as_of,metric_type,reported_at,note
+F001,identity,"示例：运营主体为 XX科技有限公司，统一社会信用代码 91440300XXXXXXXXXX，成立于 2019-04-12，状态存续",VERIFIED,L1_official,https://www.gsxt.gov.cn/...,2026-08-02,"成立日期：2019年04月12日；登记状态：存续",,, ,structural,,删除本示例行后填入真实数据
+F002,operational,"示例：该 ASIN 2026-06 在 Amazon US 站月销量约 4800 件（Keepa BSR 推算，未扣退货）",WEAK,L4_tool_or_community,https://keepa.com/#!product/...,2026-08-02,"BSR 30-day average: 1,842 in Home & Kitchen",F003,2026-06,fast,2026-06-15,第三方工具估算，不可作为决策唯一依据
+F003,operational,"示例：卖方自述该 ASIN 2026-06 月销 12000 件",CONFLICT,L4_tool_or_community,,2026-08-02,"招商材料第 7 页",F002,2026-06,fast,,与 F002 差异 2.5 倍，需索取后台截图证伪

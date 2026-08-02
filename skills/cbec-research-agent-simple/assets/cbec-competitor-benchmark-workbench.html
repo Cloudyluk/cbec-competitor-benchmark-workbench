@@ -1,0 +1,1507 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>跨境竞品对标 AI 工作台</title>
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+  <style>
+    :root {
+      --bg: #f6f8fb;
+      --panel: #ffffff;
+      --panel-2: #f8fafc;
+      --text: #102033;
+      --muted: #66758a;
+      --line: #d8e0ea;
+      --line-strong: #b7c3d2;
+      --blue: #1457d9;
+      --blue-2: #0b47c2;
+      --teal: #0f8b7f;
+      --teal-2: #e7faf7;
+      --green: #168a4a;
+      --amber: #a05a00;
+      --red: #c93636;
+      --shadow: 0 12px 28px rgba(15, 35, 58, 0.08);
+      --radius: 8px;
+      --radius-sm: 6px;
+      --font: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: var(--font);
+      color: var(--text);
+      background: var(--bg);
+      line-height: 1.45;
+      letter-spacing: 0;
+    }
+
+    button, input, textarea, select { font: inherit; }
+    button { cursor: pointer; }
+    button:disabled { cursor: not-allowed; opacity: 0.58; }
+
+    .app-shell {
+      min-height: 100vh;
+      display: grid;
+      grid-template-rows: 58px 1fr;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      gap: 22px;
+      padding: 0 22px;
+      background: rgba(255,255,255,0.92);
+      border-bottom: 1px solid var(--line);
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      backdrop-filter: blur(12px);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 260px;
+      font-weight: 760;
+      font-size: 19px;
+      white-space: nowrap;
+    }
+
+    .mark {
+      width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      color: #fff;
+      border-radius: 8px;
+      background: linear-gradient(135deg, var(--teal), var(--blue));
+      box-shadow: 0 8px 18px rgba(20, 87, 217, 0.22);
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex: 1;
+    }
+
+    .nav button {
+      height: 38px;
+      padding: 0 13px;
+      border: 0;
+      color: var(--muted);
+      background: transparent;
+      border-radius: var(--radius-sm);
+      font-weight: 640;
+      font-size: 14px;
+    }
+
+    .nav button.active {
+      color: var(--blue);
+      background: #edf4ff;
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(460px, 0.88fr) minmax(560px, 1.12fr);
+      gap: 12px;
+      padding: 12px;
+      min-height: calc(100vh - 58px);
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      min-width: 0;
+    }
+
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 18px 18px 12px;
+      border-bottom: 1px solid #eef2f6;
+    }
+
+    .panel-title {
+      margin: 0;
+      font-size: 16px;
+      line-height: 1.2;
+      font-weight: 760;
+    }
+
+    .panel-sub {
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 4px;
+    }
+
+    .panel-body { padding: 16px 18px 18px; }
+    .stack { display: grid; gap: 14px; }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+
+    label {
+      display: block;
+      color: #22334a;
+      font-weight: 670;
+      font-size: 13px;
+      margin-bottom: 7px;
+    }
+
+    .required::after {
+      content: " *";
+      color: var(--red);
+    }
+
+    input, textarea, select {
+      width: 100%;
+      min-height: 40px;
+      color: var(--text);
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      padding: 9px 11px;
+      outline: none;
+      transition: border-color .18s ease, box-shadow .18s ease;
+    }
+
+    textarea {
+      min-height: 86px;
+      resize: vertical;
+    }
+
+    input:focus, textarea:focus, select:focus {
+      border-color: rgba(20, 87, 217, 0.72);
+      box-shadow: 0 0 0 3px rgba(20, 87, 217, 0.12);
+    }
+
+    .hint {
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 6px;
+    }
+
+    .input-row {
+      position: relative;
+    }
+
+    .toggle-key {
+      position: absolute;
+      right: 7px;
+      top: 29px;
+      width: 32px;
+      height: 28px;
+      border: 0;
+      background: transparent;
+      color: var(--muted);
+      border-radius: var(--radius-sm);
+    }
+
+    .api-status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 34px;
+      padding: 8px 10px;
+      background: var(--panel-2);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 99px;
+      background: var(--line-strong);
+      flex: 0 0 auto;
+    }
+
+    .api-status.ok .dot { background: var(--green); }
+    .api-status.err .dot { background: var(--red); }
+    .api-status.busy .dot { background: var(--amber); }
+
+    .btn {
+      min-height: 40px;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--text);
+      border-radius: var(--radius-sm);
+      padding: 9px 13px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-weight: 720;
+      font-size: 14px;
+      transition: transform .16s ease, border-color .16s ease, background .16s ease;
+    }
+
+    .btn:hover { transform: translateY(-1px); border-color: var(--line-strong); }
+    .btn.primary {
+      border-color: var(--blue);
+      background: linear-gradient(180deg, #1d68f2, var(--blue-2));
+      color: #fff;
+      box-shadow: 0 10px 20px rgba(20, 87, 217, .22);
+    }
+
+    .btn.teal {
+      border-color: var(--teal);
+      background: linear-gradient(180deg, #0b9d91, #087a70);
+      color: #fff;
+    }
+
+    .btn.ghost-blue {
+      border-color: #b8ccf7;
+      color: var(--blue);
+      background: #f8fbff;
+    }
+
+    .btn.full { width: 100%; }
+    .btn-row { display: flex; gap: 10px; flex-wrap: wrap; }
+    .btn-row .btn { flex: 1 1 150px; }
+
+    .api-panel {
+      position: fixed;
+      top: 70px;
+      right: 16px;
+      width: min(380px, calc(100vw - 24px));
+      max-height: calc(100vh - 86px);
+      overflow: auto;
+      z-index: 45;
+      display: none;
+      box-shadow: 0 22px 48px rgba(15, 35, 58, 0.18);
+    }
+
+    .api-panel.open { display: block; }
+
+    .api-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 35, 58, 0.18);
+      z-index: 44;
+      display: none;
+    }
+
+    .api-backdrop.open { display: block; }
+
+    .focus-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 9px 12px;
+    }
+
+    .check {
+      min-height: 38px;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 7px 9px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      background: #fff;
+      color: #24364c;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .check input {
+      width: 16px;
+      min-height: 16px;
+      accent-color: var(--blue);
+      padding: 0;
+      box-shadow: none;
+    }
+
+    .mode-row {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 9px;
+    }
+
+    .mode-card {
+      position: relative;
+      padding: 11px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      background: #fff;
+      cursor: pointer;
+    }
+
+    .mode-card input { display: none; }
+    .mode-card.active {
+      border-color: var(--blue);
+      background: #f4f8ff;
+      box-shadow: inset 0 0 0 1px rgba(20,87,217,.15);
+    }
+
+    .mode-title { font-weight: 780; font-size: 13px; }
+    .mode-desc { color: var(--muted); font-size: 12px; margin-top: 3px; }
+
+    .result-shell {
+      height: 100%;
+      display: grid;
+      grid-template-rows: auto 1fr;
+    }
+
+    .result-actions {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      flex-wrap: wrap;
+    }
+
+    .report-scroll {
+      overflow: auto;
+      padding: 14px;
+      max-height: calc(100vh - 134px);
+    }
+
+    .empty {
+      display: grid;
+      place-items: center;
+      min-height: 480px;
+      color: var(--muted);
+      text-align: center;
+      border: 1px dashed var(--line-strong);
+      border-radius: var(--radius);
+      background: linear-gradient(180deg, #fff, #f8fafc);
+    }
+
+    .empty strong {
+      display: block;
+      color: var(--text);
+      font-size: 18px;
+      margin-bottom: 6px;
+    }
+
+    .report {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 14px;
+    }
+
+    .report h2 {
+      margin: 0 0 10px;
+      color: #0e5661;
+      font-size: 18px;
+    }
+
+    .report h3 {
+      margin: 18px 0 10px;
+      font-size: 15px;
+      color: #155e75;
+    }
+
+    .summary-card {
+      display: grid;
+      grid-template-columns: 130px 1fr;
+      gap: 14px;
+      padding: 14px;
+      border: 1px solid #a8e4dc;
+      background: var(--teal-2);
+      border-radius: var(--radius);
+      margin-bottom: 12px;
+    }
+
+    .score-badge {
+      min-height: 112px;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      border: 1px solid #b7e4de;
+      background: linear-gradient(180deg, #fff, #dff7f3);
+      border-radius: var(--radius);
+      color: #0d6d64;
+      font-weight: 800;
+    }
+
+    .score-badge .big { font-size: 36px; line-height: 1; }
+    .score-badge .small { font-size: 12px; color: #3a817b; margin-top: 6px; }
+
+    .result-pill {
+      display: inline-flex;
+      align-items: center;
+      height: 28px;
+      padding: 0 10px;
+      border-radius: 999px;
+      background: #dff7f3;
+      color: #07685f;
+      font-weight: 780;
+      font-size: 13px;
+      margin-bottom: 8px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      font-size: 13px;
+      background: #fff;
+    }
+
+    th, td {
+      border-bottom: 1px solid var(--line);
+      border-right: 1px solid var(--line);
+      padding: 9px 10px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: #f1f6fb;
+      color: #27384e;
+      font-weight: 760;
+      white-space: nowrap;
+    }
+
+    td:last-child, th:last-child { border-right: 0; }
+    tr:last-child td { border-bottom: 0; }
+
+    .list {
+      display: grid;
+      gap: 8px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .list li {
+      padding: 9px 10px;
+      background: #f8fafc;
+      border: 1px solid #e5ebf3;
+      border-radius: var(--radius-sm);
+    }
+
+    .plan-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .plan-card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fbfdff;
+      padding: 11px;
+    }
+
+    .plan-card strong {
+      color: var(--teal);
+      font-size: 15px;
+    }
+
+    .plan-card ul {
+      margin: 8px 0 0;
+      padding-left: 18px;
+      color: #304156;
+      font-size: 13px;
+    }
+
+    .toast {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      min-width: 240px;
+      max-width: 420px;
+      padding: 12px 14px;
+      border-radius: var(--radius);
+      background: #102033;
+      color: #fff;
+      box-shadow: 0 14px 30px rgba(0,0,0,.2);
+      transform: translateY(18px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .18s ease, transform .18s ease;
+      z-index: 50;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .loading {
+      display: none;
+      align-items: center;
+      gap: 9px;
+      color: var(--muted);
+      font-size: 13px;
+      justify-content: center;
+      margin-top: 10px;
+    }
+
+    .loading.show { display: flex; }
+    .spinner {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      border: 2px solid #c9d6e4;
+      border-top-color: var(--blue);
+      animation: spin .8s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .view { display: none; }
+    .view.active { display: block; }
+
+    .history-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .history-item {
+      display: grid;
+      gap: 4px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fff;
+      padding: 12px;
+    }
+
+    .history-item button { justify-self: start; margin-top: 4px; }
+
+    @media (max-width: 1180px) {
+      .layout { grid-template-columns: 1fr; }
+      .result-shell { grid-column: 1 / -1; }
+      .report-scroll { max-height: none; }
+    }
+
+    @media (max-width: 760px) {
+      .topbar { align-items: flex-start; height: auto; padding: 12px; flex-wrap: wrap; }
+      .brand { min-width: 0; width: 100%; }
+      .nav { width: 100%; overflow-x: auto; }
+      .top-actions { width: 100%; }
+      .layout { grid-template-columns: 1fr; padding: 10px; }
+      .grid-2, .focus-grid, .mode-row, .summary-card, .plan-grid { grid-template-columns: 1fr; }
+      .result-actions .btn { flex: 1 1 100%; }
+      .report-scroll { padding: 10px; }
+      table { display: block; overflow-x: auto; white-space: nowrap; }
+    }
+
+    @media print {
+      body { background: #fff; }
+      .topbar, .api-panel, .api-backdrop, .input-panel, .result-actions, .toast { display: none !important; }
+      .app-shell, .layout, .result-shell, .report-scroll { display: block; padding: 0; min-height: 0; max-height: none; overflow: visible; }
+      .panel { box-shadow: none; border: 0; }
+      .report { border: 0; padding: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand">
+        <div class="mark" aria-hidden="true">↗</div>
+        <span>跨境竞品对标 AI 工作台</span>
+      </div>
+      <nav class="nav" aria-label="主导航">
+        <button class="active" data-view-button="workbench">工作台</button>
+        <button data-view-button="history">历史报告</button>
+        <button data-view-button="guide">使用说明</button>
+      </nav>
+      <div class="top-actions">
+        <button class="btn ghost-blue" id="apiDrawerBtn" type="button">API 设置 ▾</button>
+        <button class="btn ghost-blue" id="demoBtn" type="button">载入示例</button>
+        <button class="btn" id="clearAllBtn" type="button">清空</button>
+      </div>
+    </header>
+
+    <main class="layout view active" id="workbenchView">
+      <div class="api-backdrop" id="apiBackdrop"></div>
+      <section class="panel api-panel">
+        <div class="panel-header">
+          <div>
+            <h2 class="panel-title">API 设置</h2>
+            <div class="panel-sub">需要时展开填写，保存后可一键调用</div>
+          </div>
+          <button class="btn" id="closeApiBtn" type="button" style="min-height:32px;padding:5px 9px">收起</button>
+        </div>
+        <div class="panel-body stack">
+          <div>
+            <label for="provider">LLM 提供商</label>
+            <select id="provider">
+              <option value="OpenAI">OpenAI</option>
+              <option value="OpenAI Compatible">OpenAI Compatible</option>
+              <option value="DeepSeek">DeepSeek</option>
+              <option value="Qwen">Qwen</option>
+              <option value="Moonshot">Moonshot</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div class="input-row">
+            <label for="apiKey">API Key</label>
+            <input id="apiKey" type="password" autocomplete="off" placeholder="sk-..." />
+            <button class="toggle-key" id="toggleKeyBtn" type="button" title="显示/隐藏">◉</button>
+            <div class="hint">仅保存在本地浏览器。</div>
+          </div>
+          <div>
+            <label for="baseUrl">Base URL</label>
+            <input id="baseUrl" type="url" placeholder="https://api.openai.com/v1" />
+            <div class="hint">例如：https://api.openai.com/v1</div>
+          </div>
+          <div>
+            <label for="model">模型</label>
+            <input id="model" placeholder="gpt-4o-mini / deepseek-chat / qwen-plus" />
+          </div>
+          <div class="grid-2">
+            <div>
+              <label for="temperature">温度</label>
+              <input id="temperature" type="number" min="0" max="1" step="0.1" value="0.3" />
+            </div>
+            <div>
+              <label for="maxTokens">最大 Tokens</label>
+              <input id="maxTokens" type="number" min="1000" step="500" value="6000" />
+            </div>
+          </div>
+          <div class="btn-row">
+            <button class="btn teal" id="saveApiBtn" type="button">保存 API 设置</button>
+            <button class="btn" id="testApiBtn" type="button">测试连接</button>
+          </div>
+          <div class="api-status" id="apiStatus">
+            <span class="dot"></span>
+            <span>未测试连接</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel input-panel">
+        <div class="panel-header">
+          <div>
+            <h2 class="panel-title">竞品调查输入</h2>
+            <div class="panel-sub">只填业务信息，一键生成网页版调查内容</div>
+          </div>
+          <span class="panel-sub">* 为必填项</span>
+        </div>
+        <div class="panel-body stack">
+          <div class="grid-2">
+            <div>
+              <label class="required" for="competitorName">竞品名称</label>
+              <input id="competitorName" placeholder="Anker / JISULIFE / Fosi Audio" />
+            </div>
+            <div>
+              <label for="competitorUrl">竞品链接</label>
+              <input id="competitorUrl" placeholder="官网 / 店铺 / ASIN / 社媒链接" />
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div>
+              <label class="required" for="targetMarket">目标市场</label>
+              <select id="targetMarket">
+                <option>美国</option>
+                <option>欧洲</option>
+                <option>英国</option>
+                <option>日本</option>
+                <option>东南亚</option>
+                <option>拉美</option>
+                <option>全球</option>
+              </select>
+            </div>
+            <div>
+              <label class="required" for="category">产品类目</label>
+              <input id="category" placeholder="便携小家电 / 消费电子 / 宠物用品" />
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div>
+              <label for="competitorType">竞品类型</label>
+              <select id="competitorType">
+                <option>品牌</option>
+                <option>平台店铺</option>
+                <option>独立站</option>
+                <option>商品/ASIN</option>
+                <option>直播间/社媒账号</option>
+                <option>类目头部品牌</option>
+              </select>
+            </div>
+            <div>
+              <label for="analysisMode">分析模式</label>
+              <select id="analysisMode">
+                <option value="quick">快速模式</option>
+                <option value="pro">专业模式</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label for="companyInfo">本公司信息</label>
+            <textarea id="companyInfo" maxlength="900" placeholder="公司/品牌名称、主营类目、当前平台、Top SKU、团队规模、当前痛点等。"></textarea>
+            <div class="hint">不填也能生成，但我方评分会标记为“待补充”。</div>
+          </div>
+
+          <div>
+            <label for="sourceNotes">已有资料/链接/观察</label>
+            <textarea id="sourceNotes" maxlength="1600" placeholder="可粘贴竞品官网信息、店铺观察、广告素材、评论摘要、内部数据等。"></textarea>
+          </div>
+
+          <div>
+            <label>对标聚焦维度</label>
+            <div class="focus-grid" id="focusGrid">
+              <label class="check"><input type="checkbox" value="产品组合" checked />产品组合</label>
+              <label class="check"><input type="checkbox" value="平台运营" checked />平台运营</label>
+              <label class="check"><input type="checkbox" value="内容素材" checked />内容素材</label>
+              <label class="check"><input type="checkbox" value="广告增长" checked />广告增长</label>
+              <label class="check"><input type="checkbox" value="独立站" />独立站</label>
+              <label class="check"><input type="checkbox" value="品牌信任" checked />品牌信任</label>
+              <label class="check"><input type="checkbox" value="供应链履约" />供应链履约</label>
+              <label class="check"><input type="checkbox" value="数据管理" />数据管理</label>
+            </div>
+          </div>
+
+          <div>
+            <label>输出深度</label>
+            <div class="mode-row">
+              <label class="mode-card active" data-mode-card="manager">
+                <input type="radio" name="depth" value="manager" checked />
+                <div class="mode-title">管理层摘要</div>
+                <div class="mode-desc">结论、差距、行动优先级</div>
+              </label>
+              <label class="mode-card" data-mode-card="operator">
+                <input type="radio" name="depth" value="operator" />
+                <div class="mode-title">运营执行版</div>
+                <div class="mode-desc">更细的动作、KPI、负责人建议</div>
+              </label>
+            </div>
+          </div>
+
+          <button class="btn primary full" id="generateBtn" type="button">一键生成网页版调查内容</button>
+          <div class="loading" id="loading"><span class="spinner"></span><span>正在调用大模型生成报告...</span></div>
+        </div>
+      </section>
+
+      <section class="panel result-shell">
+        <div class="panel-header">
+          <div>
+            <h2 class="panel-title">结果预览</h2>
+            <div class="panel-sub" id="resultMeta">生成后可下载 Markdown 或 PDF</div>
+          </div>
+          <div class="result-actions">
+            <button class="btn ghost-blue" id="copyMdBtn" type="button" disabled>复制 MD</button>
+            <button class="btn ghost-blue" id="downloadMdBtn" type="button" disabled>下载 MD</button>
+            <button class="btn ghost-blue" id="downloadPdfBtn" type="button" disabled>下载 PDF</button>
+          </div>
+        </div>
+        <div class="report-scroll">
+          <div class="empty" id="emptyState">
+            <div>
+              <strong>等待生成报告</strong>
+              <div>填写左侧 API 和业务信息后，点击“一键生成”。</div>
+            </div>
+          </div>
+          <article class="report" id="report" style="display:none"></article>
+        </div>
+      </section>
+    </main>
+
+    <main class="layout view" id="historyView" style="grid-template-columns: 1fr;">
+      <section class="panel">
+        <div class="panel-header">
+          <div>
+            <h2 class="panel-title">历史报告</h2>
+            <div class="panel-sub">保存在本地浏览器，最多保留 20 条</div>
+          </div>
+          <button class="btn" id="clearHistoryBtn" type="button">清空历史</button>
+        </div>
+        <div class="panel-body">
+          <div class="history-list" id="historyList"></div>
+        </div>
+      </section>
+    </main>
+
+    <main class="layout view" id="guideView" style="grid-template-columns: 1fr;">
+      <section class="panel">
+        <div class="panel-header">
+          <div>
+            <h2 class="panel-title">使用说明</h2>
+            <div class="panel-sub">普通用户流程</div>
+          </div>
+        </div>
+        <div class="panel-body report">
+          <h2>怎么用</h2>
+          <ul>
+            <li>先在 API 连接配置里填写兼容 OpenAI 的接口信息。</li>
+            <li>填写竞品名称、目标市场、产品类目和本公司信息。</li>
+            <li>选择对标维度，点击一键生成报告。</li>
+            <li>检查结果后下载 Markdown 或 PDF。</li>
+          </ul>
+          <h3>安全提示</h3>
+          <ul>
+            <li>API Key 只保存在本机浏览器 localStorage。</li>
+            <li>纯前端工具会直接从浏览器请求你填写的 API Base URL。</li>
+            <li>企业团队正式使用时，建议后续升级为本地代理或后端版本。</li>
+          </ul>
+          <h3>报告用途</h3>
+          <ul>
+            <li>竞品月度复盘</li>
+            <li>新品立项前对标</li>
+            <li>运营/内容/投放提升计划</li>
+            <li>管理层季度能力评估</li>
+          </ul>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const $ = (id) => document.getElementById(id);
+    const STORAGE_KEY = "cbecBenchmarkWorkbench.v1";
+    const HISTORY_KEY = "cbecBenchmarkWorkbench.history.v1";
+    let currentReport = null;
+    let currentMarkdown = "";
+
+    const capabilities = [
+      "Product Portfolio",
+      "Marketplace Operations",
+      "DTC Website",
+      "Content and Creatives",
+      "Paid Growth",
+      "Social and Community",
+      "Pricing and Promotion",
+      "Supply Chain and Fulfillment",
+      "Brand Trust",
+      "Data and Management"
+    ];
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function toast(message) {
+      const node = $("toast");
+      node.textContent = message;
+      node.classList.add("show");
+      setTimeout(() => node.classList.remove("show"), 2600);
+    }
+
+    function setStatus(type, text) {
+      const node = $("apiStatus");
+      node.className = "api-status" + (type ? " " + type : "");
+      node.innerHTML = `<span class="dot"></span><span>${escapeHtml(text)}</span>`;
+    }
+
+    function getApiConfig() {
+      return {
+        provider: $("provider").value,
+        apiKey: $("apiKey").value.trim(),
+        baseUrl: $("baseUrl").value.trim().replace(/\/$/, ""),
+        model: $("model").value.trim(),
+        temperature: Number($("temperature").value || 0.3),
+        maxTokens: Number($("maxTokens").value || 6000)
+      };
+    }
+
+    function getFormData() {
+      return {
+        competitorName: $("competitorName").value.trim(),
+        competitorUrl: $("competitorUrl").value.trim(),
+        targetMarket: $("targetMarket").value,
+        category: $("category").value.trim(),
+        competitorType: $("competitorType").value,
+        analysisMode: $("analysisMode").value,
+        companyInfo: $("companyInfo").value.trim(),
+        sourceNotes: $("sourceNotes").value.trim(),
+        focusAreas: [...document.querySelectorAll("#focusGrid input:checked")].map(x => x.value),
+        depth: document.querySelector('input[name="depth"]:checked')?.value || "manager"
+      };
+    }
+
+    function saveSettings() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(getApiConfig()));
+      toast("API 设置已保存");
+      setStatus("ok", "API 设置已保存，尚未测试连接");
+    }
+
+    function loadSettings() {
+      try {
+        const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+        if (data.provider) $("provider").value = data.provider;
+        if (data.apiKey) $("apiKey").value = data.apiKey;
+        $("baseUrl").value = data.baseUrl || "https://api.openai.com/v1";
+        $("model").value = data.model || "gpt-4o-mini";
+        $("temperature").value = data.temperature ?? 0.3;
+        $("maxTokens").value = data.maxTokens || 6000;
+      } catch {
+        $("baseUrl").value = "https://api.openai.com/v1";
+        $("model").value = "gpt-4o-mini";
+      }
+    }
+
+    function validateInputs() {
+      const api = getApiConfig();
+      const form = getFormData();
+      if (!api.baseUrl) throw new Error("请填写 API Base URL");
+      if (!api.apiKey) throw new Error("请填写 API Key");
+      if (!api.model) throw new Error("请填写模型名称");
+      if (!form.competitorName) throw new Error("请填写竞品名称");
+      if (!form.category) throw new Error("请填写产品类目");
+      if (!form.focusAreas.length) throw new Error("请至少选择一个对标维度");
+      return { api, form };
+    }
+
+    function buildPrompt(form) {
+      const schema = {
+        summary: {
+          benchmark_result: "重点学习|选择性学习|持续观察|不建议对标",
+          one_sentence_reason: "string",
+          confidence: "high|medium|low",
+          overall_score: 0
+        },
+        competitor_identity: {
+          name: "string",
+          type: "string",
+          company_entity: "string",
+          official_site: "string",
+          channels: ["string"],
+          ambiguities: ["string"]
+        },
+        key_evidence: [{ fact: "string", confidence: "已核验|较可靠|仅供参考|待核实|有冲突", source: "string", date: "string" }],
+        strengths: [{ area: "string", observation: "string", why_it_matters: "string", evidence: "string" }],
+        scorecard: [{ capability: "string", competitor_score: 0, our_score: null, gap: null, priority: "high|medium|low", evidence: "string" }],
+        improvement_opportunities: [{ opportunity: "string", current_gap: "string", target_30_60_90: "string", kpi: "string" }],
+        action_plan: { days_30: ["string"], days_60: ["string"], days_90: ["string"] },
+        missing_company_data: ["string"],
+        risks_and_non_transferable_points: ["string"],
+        markdown_report: "string"
+      };
+
+      return `你是“跨境竞品对标分析师”，服务跨境电商公司。请基于用户输入生成一份竞品对标报告。
+
+重要规则：
+1. 不要伪造来源。没有来源就写“待核实”。
+2. 如果用户未提供本公司数据，不要编造我方评分；our_score 用 null，gap 用 null，并列出需要补充的数据。
+3. 把建议变成可量化动作，必须包含 KPI 和 30/60/90 天目标。
+4. 输出必须是严格 JSON，不要 Markdown 代码围栏，不要额外解释。
+5. 能力评分范围 1-5；overall_score 范围 0-100。
+6. scorecard 至少覆盖这些能力项：${capabilities.join("、")}。
+7. 用户更关注的维度：${form.focusAreas.join("、")}。
+
+用户输入：
+- 竞品名称：${form.competitorName}
+- 竞品链接：${form.competitorUrl || "未提供"}
+- 竞品类型：${form.competitorType}
+- 目标市场：${form.targetMarket}
+- 产品类目：${form.category}
+- 分析模式：${form.analysisMode === "pro" ? "专业模式" : "快速模式"}
+- 输出深度：${form.depth === "operator" ? "运营执行版" : "管理层摘要"}
+- 本公司信息：${form.companyInfo || "未提供"}
+- 用户已有资料/观察：${form.sourceNotes || "未提供"}
+
+请返回符合以下结构的 JSON：
+${JSON.stringify(schema, null, 2)}`;
+    }
+
+    async function callModel(api, form, testOnly = false) {
+      const endpoint = api.baseUrl + "/chat/completions";
+      const messages = testOnly
+        ? [{ role: "user", content: "请只返回 JSON：{\"ok\":true,\"message\":\"connected\"}" }]
+        : [
+            { role: "system", content: "你是严谨的跨境电商竞品对标分析师。只输出严格 JSON。" },
+            { role: "user", content: buildPrompt(form) }
+          ];
+
+      const body = {
+        model: api.model,
+        messages,
+        temperature: testOnly ? 0 : api.temperature,
+        max_tokens: testOnly ? 120 : api.maxTokens
+      };
+
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + api.apiKey
+        },
+        body: JSON.stringify(body)
+      });
+
+      const text = await response.text();
+      if (!response.ok) {
+        throw new Error(`API 请求失败：${response.status} ${text.slice(0, 260)}`);
+      }
+      const data = JSON.parse(text);
+      return data.choices?.[0]?.message?.content || "";
+    }
+
+    function parseModelJson(content) {
+      let raw = String(content || "").trim();
+      raw = raw.replace(/^```json\s*/i, "").replace(/^```\s*/i, "").replace(/```$/i, "").trim();
+      const first = raw.indexOf("{");
+      const last = raw.lastIndexOf("}");
+      if (first >= 0 && last > first) raw = raw.slice(first, last + 1);
+      return JSON.parse(raw);
+    }
+
+    function normalizeReport(report, form) {
+      const fallbackScorecard = capabilities.map(name => ({
+        capability: name,
+        competitor_score: null,
+        our_score: null,
+        gap: null,
+        priority: "medium",
+        evidence: "待补充"
+      }));
+      return {
+        summary: {
+          benchmark_result: report.summary?.benchmark_result || "持续观察",
+          one_sentence_reason: report.summary?.one_sentence_reason || "资料不足，需要进一步补充公开来源和本公司数据。",
+          confidence: report.summary?.confidence || "medium",
+          overall_score: Number(report.summary?.overall_score ?? 0)
+        },
+        competitor_identity: {
+          name: report.competitor_identity?.name || form.competitorName,
+          type: report.competitor_identity?.type || form.competitorType,
+          company_entity: report.competitor_identity?.company_entity || "待核实",
+          official_site: report.competitor_identity?.official_site || form.competitorUrl || "待核实",
+          channels: Array.isArray(report.competitor_identity?.channels) ? report.competitor_identity.channels : [],
+          ambiguities: Array.isArray(report.competitor_identity?.ambiguities) ? report.competitor_identity.ambiguities : []
+        },
+        key_evidence: Array.isArray(report.key_evidence) ? report.key_evidence : [],
+        strengths: Array.isArray(report.strengths) ? report.strengths : [],
+        scorecard: Array.isArray(report.scorecard) && report.scorecard.length ? report.scorecard : fallbackScorecard,
+        improvement_opportunities: Array.isArray(report.improvement_opportunities) ? report.improvement_opportunities : [],
+        action_plan: {
+          days_30: Array.isArray(report.action_plan?.days_30) ? report.action_plan.days_30 : [],
+          days_60: Array.isArray(report.action_plan?.days_60) ? report.action_plan.days_60 : [],
+          days_90: Array.isArray(report.action_plan?.days_90) ? report.action_plan.days_90 : []
+        },
+        missing_company_data: Array.isArray(report.missing_company_data) ? report.missing_company_data : [],
+        risks_and_non_transferable_points: Array.isArray(report.risks_and_non_transferable_points) ? report.risks_and_non_transferable_points : [],
+        markdown_report: report.markdown_report || ""
+      };
+    }
+
+    function renderTable(headers, rows) {
+      if (!rows.length) return `<p class="hint">暂无数据。</p>`;
+      return `<table><thead><tr>${headers.map(h => `<th>${escapeHtml(h)}</th>`).join("")}</tr></thead><tbody>${rows.join("")}</tbody></table>`;
+    }
+
+    function renderReport(report) {
+      const identity = report.competitor_identity;
+      const evidenceRows = report.key_evidence.map(item => `
+        <tr>
+          <td>${escapeHtml(item.fact)}</td>
+          <td>${escapeHtml(item.confidence)}</td>
+          <td>${escapeHtml(item.source)}</td>
+          <td>${escapeHtml(item.date)}</td>
+        </tr>`);
+      const scoreRows = report.scorecard.map(item => `
+        <tr>
+          <td>${escapeHtml(item.capability)}</td>
+          <td>${escapeHtml(item.competitor_score ?? "待评估")}</td>
+          <td>${escapeHtml(item.our_score ?? "待补充")}</td>
+          <td>${escapeHtml(item.gap ?? "待补充")}</td>
+          <td>${escapeHtml(item.priority || "")}</td>
+          <td>${escapeHtml(item.evidence || "")}</td>
+        </tr>`);
+      const opportunityRows = report.improvement_opportunities.map(item => `
+        <tr>
+          <td>${escapeHtml(item.opportunity)}</td>
+          <td>${escapeHtml(item.current_gap)}</td>
+          <td>${escapeHtml(item.target_30_60_90)}</td>
+          <td>${escapeHtml(item.kpi)}</td>
+        </tr>`);
+
+      $("emptyState").style.display = "none";
+      const reportEl = $("report");
+      reportEl.style.display = "block";
+      reportEl.innerHTML = `
+        <h2>竞品对标报告</h2>
+        <section class="summary-card">
+          <div class="score-badge">
+            <div>
+              <div class="big">${escapeHtml(report.summary.overall_score || "-")}</div>
+              <div class="small">综合参考分 /100</div>
+            </div>
+          </div>
+          <div>
+            <span class="result-pill">${escapeHtml(report.summary.benchmark_result)}</span>
+            <h3 style="margin-top:0">结论摘要</h3>
+            <p>${escapeHtml(report.summary.one_sentence_reason)}</p>
+            <p class="hint">置信度：${escapeHtml(report.summary.confidence)}</p>
+          </div>
+        </section>
+
+        <h3>竞品身份</h3>
+        <table>
+          <tbody>
+            <tr><th>名称</th><td>${escapeHtml(identity.name)}</td></tr>
+            <tr><th>类型</th><td>${escapeHtml(identity.type)}</td></tr>
+            <tr><th>主体</th><td>${escapeHtml(identity.company_entity)}</td></tr>
+            <tr><th>官网/链接</th><td>${escapeHtml(identity.official_site)}</td></tr>
+            <tr><th>渠道</th><td>${escapeHtml(identity.channels.join("、") || "待核实")}</td></tr>
+            <tr><th>歧义</th><td>${escapeHtml(identity.ambiguities.join("；") || "无")}</td></tr>
+          </tbody>
+        </table>
+
+        <h3>关键证据</h3>
+        ${renderTable(["事实", "可靠性", "来源", "时间"], evidenceRows)}
+
+        <h3>竞品优势</h3>
+        <ul class="list">
+          ${report.strengths.length ? report.strengths.map(x => `<li><strong>${escapeHtml(x.area)}：</strong>${escapeHtml(x.observation)}<br><span class="hint">${escapeHtml(x.why_it_matters || "")} ${escapeHtml(x.evidence || "")}</span></li>`).join("") : "<li>暂无数据。</li>"}
+        </ul>
+
+        <h3>能力评分卡</h3>
+        ${renderTable(["能力项", "竞品评分", "我方评分", "差距", "优先级", "证据"], scoreRows)}
+
+        <h3>可量化提升机会</h3>
+        ${renderTable(["机会", "当前差距", "30/60/90 天目标", "KPI"], opportunityRows)}
+
+        <h3>30/60/90 天行动计划</h3>
+        <div class="plan-grid">
+          <div class="plan-card"><strong>30 天</strong><ul>${(report.action_plan.days_30.length ? report.action_plan.days_30 : ["待生成"]).map(x => `<li>${escapeHtml(x)}</li>`).join("")}</ul></div>
+          <div class="plan-card"><strong>60 天</strong><ul>${(report.action_plan.days_60.length ? report.action_plan.days_60 : ["待生成"]).map(x => `<li>${escapeHtml(x)}</li>`).join("")}</ul></div>
+          <div class="plan-card"><strong>90 天</strong><ul>${(report.action_plan.days_90.length ? report.action_plan.days_90 : ["待生成"]).map(x => `<li>${escapeHtml(x)}</li>`).join("")}</ul></div>
+        </div>
+
+        <h3>需要补充的数据</h3>
+        <ul class="list">${(report.missing_company_data.length ? report.missing_company_data : ["暂无"]).map(x => `<li>${escapeHtml(x)}</li>`).join("")}</ul>
+
+        <h3>风险与不可复制点</h3>
+        <ul class="list">${(report.risks_and_non_transferable_points.length ? report.risks_and_non_transferable_points : ["暂无"]).map(x => `<li>${escapeHtml(x)}</li>`).join("")}</ul>
+      `;
+      $("resultMeta").textContent = "生成时间：" + new Date().toLocaleString();
+      $("copyMdBtn").disabled = false;
+      $("downloadMdBtn").disabled = false;
+      $("downloadPdfBtn").disabled = false;
+    }
+
+    function buildMarkdown(report) {
+      if (report.markdown_report && report.markdown_report.length > 80) return report.markdown_report;
+      const lines = [];
+      lines.push("# 竞品对标报告");
+      lines.push("");
+      lines.push(`## 结论`);
+      lines.push(`【${report.summary.benchmark_result}】${report.summary.one_sentence_reason}`);
+      lines.push("");
+      lines.push("## 竞品身份");
+      lines.push(`- 名称：${report.competitor_identity.name}`);
+      lines.push(`- 类型：${report.competitor_identity.type}`);
+      lines.push(`- 主体：${report.competitor_identity.company_entity}`);
+      lines.push(`- 链接：${report.competitor_identity.official_site}`);
+      lines.push(`- 渠道：${report.competitor_identity.channels.join("、") || "待核实"}`);
+      lines.push("");
+      lines.push("## 关键证据");
+      lines.push("| 事实 | 可靠性 | 来源 | 时间 |");
+      lines.push("|---|---|---|---|");
+      report.key_evidence.forEach(x => lines.push(`| ${x.fact || ""} | ${x.confidence || ""} | ${x.source || ""} | ${x.date || ""} |`));
+      lines.push("");
+      lines.push("## 能力评分卡");
+      lines.push("| 能力项 | 竞品评分 | 我方评分 | 差距 | 优先级 | 证据 |");
+      lines.push("|---|---:|---:|---:|---|---|");
+      report.scorecard.forEach(x => lines.push(`| ${x.capability || ""} | ${x.competitor_score ?? "待评估"} | ${x.our_score ?? "待补充"} | ${x.gap ?? "待补充"} | ${x.priority || ""} | ${x.evidence || ""} |`));
+      lines.push("");
+      lines.push("## 可量化提升机会");
+      lines.push("| 机会 | 当前差距 | 30/60/90 天目标 | KPI |");
+      lines.push("|---|---|---|---|");
+      report.improvement_opportunities.forEach(x => lines.push(`| ${x.opportunity || ""} | ${x.current_gap || ""} | ${x.target_30_60_90 || ""} | ${x.kpi || ""} |`));
+      lines.push("");
+      lines.push("## 30/60/90 天行动计划");
+      lines.push("### 30 天");
+      report.action_plan.days_30.forEach(x => lines.push(`- ${x}`));
+      lines.push("### 60 天");
+      report.action_plan.days_60.forEach(x => lines.push(`- ${x}`));
+      lines.push("### 90 天");
+      report.action_plan.days_90.forEach(x => lines.push(`- ${x}`));
+      lines.push("");
+      lines.push("## 需要补充的数据");
+      report.missing_company_data.forEach(x => lines.push(`- ${x}`));
+      lines.push("");
+      lines.push("## 风险与不可复制点");
+      report.risks_and_non_transferable_points.forEach(x => lines.push(`- ${x}`));
+      return lines.join("\n");
+    }
+
+    async function testApi() {
+      try {
+        const api = getApiConfig();
+        if (!api.baseUrl || !api.apiKey || !api.model) throw new Error("请先填写 Base URL、API Key 和模型");
+        setStatus("busy", "正在测试连接...");
+        await callModel(api, getFormData(), true);
+        setStatus("ok", "连接成功");
+        toast("API 连接成功");
+      } catch (err) {
+        setStatus("err", err.message);
+        toast(err.message);
+      }
+    }
+
+    async function generateReport() {
+      try {
+        const { api, form } = validateInputs();
+        $("generateBtn").disabled = true;
+        $("loading").classList.add("show");
+        const content = await callModel(api, form, false);
+        const parsed = parseModelJson(content);
+        currentReport = normalizeReport(parsed, form);
+        currentMarkdown = buildMarkdown(currentReport);
+        renderReport(currentReport);
+        saveHistory(form, currentReport, currentMarkdown);
+        toast("报告已生成");
+      } catch (err) {
+        toast(err.message);
+      } finally {
+        $("generateBtn").disabled = false;
+        $("loading").classList.remove("show");
+      }
+    }
+
+    function downloadFile(name, content, type) {
+      const blob = new Blob([content], { type });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = name;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    function safeFileName(raw) {
+      return String(raw || "竞品对标报告").replace(/[\\/:*?"<>|]+/g, "-").slice(0, 80);
+    }
+
+    function downloadMd() {
+      if (!currentMarkdown) return;
+      const name = safeFileName(currentReport?.competitor_identity?.name) + "-竞品对标报告.md";
+      downloadFile(name, currentMarkdown, "text/markdown;charset=utf-8");
+    }
+
+    async function downloadPdf() {
+      if (!currentReport) return;
+      const reportEl = $("report");
+      if (!window.html2canvas || !window.jspdf?.jsPDF) {
+        toast("PDF 组件未加载，已打开打印窗口，可选择另存为 PDF");
+        window.print();
+        return;
+      }
+      toast("正在生成 PDF...");
+      const canvas = await html2canvas(reportEl, { scale: 2, backgroundColor: "#ffffff", useCORS: true });
+      const imgData = canvas.toDataURL("image/png");
+      const pdf = new window.jspdf.jsPDF("p", "mm", "a4");
+      const pageWidth = 210;
+      const pageHeight = 297;
+      const margin = 10;
+      const imgWidth = pageWidth - margin * 2;
+      const imgHeight = canvas.height * imgWidth / canvas.width;
+      let heightLeft = imgHeight;
+      let position = margin;
+      pdf.addImage(imgData, "PNG", margin, position, imgWidth, imgHeight);
+      heightLeft -= (pageHeight - margin * 2);
+      while (heightLeft > 0) {
+        pdf.addPage();
+        position = margin - (imgHeight - heightLeft);
+        pdf.addImage(imgData, "PNG", margin, position, imgWidth, imgHeight);
+        heightLeft -= (pageHeight - margin * 2);
+      }
+      pdf.save(safeFileName(currentReport?.competitor_identity?.name) + "-竞品对标报告.pdf");
+    }
+
+    async function copyMarkdown() {
+      if (!currentMarkdown) return;
+      await navigator.clipboard.writeText(currentMarkdown);
+      toast("Markdown 已复制");
+    }
+
+    function demoReport() {
+      $("competitorName").value = "JISULIFE 几素";
+      $("competitorUrl").value = "https://www.jisulife.com";
+      $("targetMarket").value = "美国";
+      $("category").value = "便携小家电 / 便携风扇";
+      $("competitorType").value = "品牌";
+      $("companyInfo").value = "我们是一家做便携小家电的跨境公司，主要销售便携风扇和桌面小电器，目前以 Amazon 和 TikTok Shop 为主，痛点是品牌内容弱、Listing 转化率不稳定、达人内容储备少。";
+      $("sourceNotes").value = "希望重点学习竞品的产品组合、内容素材、品牌信任和平台运营方式。";
+      currentReport = normalizeReport({
+        summary: {
+          benchmark_result: "重点学习",
+          one_sentence_reason: "JISULIFE 在便携小家电类目形成了清晰的产品矩阵、内容表达和品牌信任资产，适合作为产品组合与内容能力的重点对标对象。",
+          confidence: "medium",
+          overall_score: 82
+        },
+        competitor_identity: {
+          name: "JISULIFE 几素",
+          type: "品牌",
+          company_entity: "深圳市几素科技有限公司（需以工商/官网进一步核验）",
+          official_site: "https://www.jisulife.com",
+          channels: ["独立站", "Amazon", "TikTok/社媒", "线下/分销待核实"],
+          ambiguities: ["平台店铺主体需进一步核验"]
+        },
+        key_evidence: [
+          { fact: "品牌围绕便携风扇、桌面风扇、生活小电器形成较清晰产品线。", confidence: "较可靠", source: "用户提供官网/公开页面待复核", date: "当前调研" },
+          { fact: "独立站具备品牌展示、产品分类、购买路径和售后信任模块。", confidence: "仅供参考", source: "官网观察", date: "当前调研" },
+          { fact: "适合作为便携小家电内容表达和产品矩阵对标对象。", confidence: "较可靠", source: "多维度综合判断", date: "当前调研" }
+        ],
+        strengths: [
+          { area: "产品组合", observation: "围绕便携、户外、桌面使用场景组织 SKU。", why_it_matters: "便于形成价格梯度和用户场景记忆。", evidence: "官网/产品分类待复核" },
+          { area: "内容素材", observation: "产品卖点更适合短视频演示。", why_it_matters: "便携风扇类目依赖场景化内容提升转化。", evidence: "类目特征 + 页面观察" },
+          { area: "品牌信任", observation: "品牌命名、官网和产品线相对统一。", why_it_matters: "有利于从单品销售升级为品牌心智。", evidence: "官网观察" }
+        ],
+        scorecard: [
+          { capability: "Product Portfolio", competitor_score: 4, our_score: 3, gap: 1, priority: "high", evidence: "竞品产品线更成体系" },
+          { capability: "Marketplace Operations", competitor_score: 4, our_score: null, gap: null, priority: "high", evidence: "需补充我方平台转化率/评论数据" },
+          { capability: "DTC Website", competitor_score: 4, our_score: 2, gap: 2, priority: "medium", evidence: "竞品独立站信任与产品展示更完整" },
+          { capability: "Content and Creatives", competitor_score: 4, our_score: 2, gap: 2, priority: "high", evidence: "我方短视频素材储备不足" },
+          { capability: "Paid Growth", competitor_score: 3, our_score: null, gap: null, priority: "medium", evidence: "需补充广告素材和投放数据" },
+          { capability: "Social and Community", competitor_score: 3, our_score: 2, gap: 1, priority: "medium", evidence: "我方达人内容不足" },
+          { capability: "Pricing and Promotion", competitor_score: 4, our_score: 3, gap: 1, priority: "medium", evidence: "需建立价格梯度和套装策略" },
+          { capability: "Supply Chain and Fulfillment", competitor_score: 3, our_score: null, gap: null, priority: "low", evidence: "公开资料不足" },
+          { capability: "Brand Trust", competitor_score: 4, our_score: 2, gap: 2, priority: "high", evidence: "我方品牌信任模块不足" },
+          { capability: "Data and Management", competitor_score: 3, our_score: 2, gap: 1, priority: "medium", evidence: "我方需建立内容/Listing 实验节奏" }
+        ],
+        improvement_opportunities: [
+          { opportunity: "重构 Top SKU 页面内容", current_gap: "Listing 与独立站卖点表达不统一", target_30_60_90: "30 天完成 Top 3 SKU 页面重写，60 天完成素材测试，90 天形成模板", kpi: "转化率 +10%" },
+          { opportunity: "建立短视频素材库", current_gap: "达人/UGC 内容储备少", target_30_60_90: "30 天产出 12 条短视频，60 天扩展到 30 条，90 天沉淀 5 类高转化脚本", kpi: "CTR +15%，加购率 +8%" },
+          { opportunity: "建立价格梯度", current_gap: "缺少 entry/core/pro 价格层级", target_30_60_90: "90 天形成 3 档价格带与 2 个套装方案", kpi: "AOV +8%" }
+        ],
+        action_plan: {
+          days_30: ["梳理 Top 3 SKU 的核心场景、卖点、竞品差异点。", "重写标题、五点、主图卖点和独立站产品页首屏。", "产出 12 条短视频脚本，覆盖开箱、痛点、场景、对比。"],
+          days_60: ["对 Top 3 SKU 做图片和标题 A/B 测试。", "启动 5-10 位小达人内容合作。", "建立 entry/core/pro 价格梯度草案。"],
+          days_90: ["形成 Listing 与短视频素材 SOP。", "搭建达人内容月度复盘表。", "以转化率、AOV、CTR、加购率复盘对标提升效果。"]
+        },
+        missing_company_data: ["Top SKU 销量与转化率", "广告花费与 ROAS", "退货率与差评原因", "当前内容产出频率", "达人合作数据"],
+        risks_and_non_transferable_points: ["竞品公开数据不等于真实后台数据。", "竞品供应链成本和库存能力不可直接推断。", "内容风格可以学习，但品牌定位不能简单照搬。"]
+      }, getFormData());
+      currentMarkdown = buildMarkdown(currentReport);
+      renderReport(currentReport);
+      saveHistory(getFormData(), currentReport, currentMarkdown);
+      toast("示例报告已载入");
+    }
+
+    function saveHistory(form, report, markdown) {
+      const item = {
+        id: Date.now(),
+        title: `${form.competitorName || report.competitor_identity.name} - ${report.summary.benchmark_result}`,
+        time: new Date().toLocaleString(),
+        form,
+        report,
+        markdown
+      };
+      const history = getHistory();
+      history.unshift(item);
+      localStorage.setItem(HISTORY_KEY, JSON.stringify(history.slice(0, 20)));
+      renderHistory();
+    }
+
+    function getHistory() {
+      try { return JSON.parse(localStorage.getItem(HISTORY_KEY) || "[]"); }
+      catch { return []; }
+    }
+
+    function renderHistory() {
+      const list = $("historyList");
+      const history = getHistory();
+      if (!history.length) {
+        list.innerHTML = `<div class="empty" style="min-height:260px"><div><strong>暂无历史报告</strong><div>生成报告后会自动保存在这里。</div></div></div>`;
+        return;
+      }
+      list.innerHTML = history.map(item => `
+        <div class="history-item">
+          <strong>${escapeHtml(item.title)}</strong>
+          <span class="hint">${escapeHtml(item.time)}</span>
+          <button class="btn ghost-blue" type="button" data-history-id="${item.id}">打开报告</button>
+        </div>
+      `).join("");
+      list.querySelectorAll("[data-history-id]").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const found = getHistory().find(x => String(x.id) === String(btn.dataset.historyId));
+          if (!found) return;
+          currentReport = found.report;
+          currentMarkdown = found.markdown || buildMarkdown(found.report);
+          renderReport(currentReport);
+          switchView("workbench");
+        });
+      });
+    }
+
+    function switchView(name) {
+      document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
+      document.querySelectorAll("[data-view-button]").forEach(b => b.classList.remove("active"));
+      $(`${name}View`).classList.add("active");
+      document.querySelector(`[data-view-button="${name}"]`).classList.add("active");
+      if (name === "history") renderHistory();
+    }
+
+    function setApiDrawer(open) {
+      document.querySelector(".api-panel").classList.toggle("open", open);
+      $("apiBackdrop").classList.toggle("open", open);
+      $("apiDrawerBtn").textContent = open ? "API 设置 ▴" : "API 设置 ▾";
+    }
+
+    function clearInputs() {
+      ["competitorName", "competitorUrl", "category", "companyInfo", "sourceNotes"].forEach(id => $(id).value = "");
+      $("emptyState").style.display = "grid";
+      $("report").style.display = "none";
+      currentReport = null;
+      currentMarkdown = "";
+      ["copyMdBtn", "downloadMdBtn", "downloadPdfBtn"].forEach(id => $(id).disabled = true);
+      $("resultMeta").textContent = "生成后可下载 Markdown 或 PDF";
+      toast("已清空输入和结果");
+    }
+
+    function bindEvents() {
+      $("saveApiBtn").addEventListener("click", saveSettings);
+      $("testApiBtn").addEventListener("click", testApi);
+      $("apiDrawerBtn").addEventListener("click", () => setApiDrawer(!document.querySelector(".api-panel").classList.contains("open")));
+      $("closeApiBtn").addEventListener("click", () => setApiDrawer(false));
+      $("apiBackdrop").addEventListener("click", () => setApiDrawer(false));
+      $("generateBtn").addEventListener("click", generateReport);
+      $("downloadMdBtn").addEventListener("click", downloadMd);
+      $("downloadPdfBtn").addEventListener("click", downloadPdf);
+      $("copyMdBtn").addEventListener("click", copyMarkdown);
+      $("demoBtn").addEventListener("click", demoReport);
+      $("clearAllBtn").addEventListener("click", clearInputs);
+      $("clearHistoryBtn").addEventListener("click", () => {
+        localStorage.removeItem(HISTORY_KEY);
+        renderHistory();
+        toast("历史报告已清空");
+      });
+      $("toggleKeyBtn").addEventListener("click", () => {
+        $("apiKey").type = $("apiKey").type === "password" ? "text" : "password";
+      });
+      document.querySelectorAll("[data-view-button]").forEach(btn => {
+        btn.addEventListener("click", () => switchView(btn.dataset.viewButton));
+      });
+      document.querySelectorAll("[data-mode-card]").forEach(card => {
+        card.addEventListener("click", () => {
+          document.querySelectorAll("[data-mode-card]").forEach(x => x.classList.remove("active"));
+          card.classList.add("active");
+          card.querySelector("input").checked = true;
+        });
+      });
+    }
+
+    loadSettings();
+    bindEvents();
+    renderHistory();
+  </script>
+</body>
+</html>
